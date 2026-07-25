@@ -1,24 +1,4 @@
-/* =====================================================================
-   ATTENDKIT — ATTENDANCE TRACKER
-   Vanilla JavaScript Application Logic
-   Sections:
-     1. State & Constants
-     2. LocalStorage Helpers
-     3. Utility Helpers (date, id, escaping)
-     4. Toast Notifications
-     5. Confirmation Modal
-     6. Edit Student Modal
-     7. Student CRUD Operations
-     8. Attendance Operations
-     9. Rendering (table, stats, filters, search, sort)
-    10. CSV Export / Import
-    11. Theme Toggle
-    12. Sidebar Toggle (mobile)
-    13. Live Date & Time
-    14. Event Listeners / Init
-   ===================================================================== */
 
-/* --------------------- 1. STATE & CONSTANTS --------------------- */
 
 const STORAGE_KEY = "attendkit_students";
 const THEME_KEY = "attendkit_theme";
