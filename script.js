@@ -1,7 +1,7 @@
 /* =====================================================================
    ATTENDKIT — ATTENDANCE TRACKER
    Vanilla JavaScript Application Logic
-   Sections:
+   Sections
      1. State & Constants
      2. LocalStorage Helpers
      3. Utility Helpers (date, id, escaping)
