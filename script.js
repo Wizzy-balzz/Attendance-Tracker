@@ -12,7 +12,6 @@ let pendingDeleteId = null; // id awaiting confirmation for deletion
 let pendingModalAction = null; // callback executed if confirm modal is accepted
 let editingStudentId = null; // id of student currently being edited
 
-/* --------------------- 2. LOCALSTORAGE HELPERS --------------------- */
 
 /**
  * Persists the current `students` array to localStorage.
