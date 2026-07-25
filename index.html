@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AttendKit — Attendance Tracker</title>
+
+<!-- Google Fonts: Poppins -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Poppins:ital@0;1&display=swap" rel="stylesheet">
+
+<!-- Font Awesome Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============ SIDEBAR ============ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-mark"><i class="fa-solid fa-signature"></i></div>
+    <div class="brand-text">
+      <h1>AttendKit</h1>
+      <span>Attendance Tracker</span>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <button class="nav-item active" data-filter="all">
+      <i class="fa-solid fa-users"></i><span>All Students</span>
+    </button>
+    <button class="nav-item" data-filter="present">
+      <i class="fa-solid fa-circle-check"></i><span>Present</span>
+    </button>
+    <button class="nav-item" data-filter="absent">
+      <i class="fa-solid fa-circle-xmark"></i><span>Absent</span>
+    </button>
+  </nav>
+
+  <div class="sidebar-actions">
+    <p class="sidebar-label">Data Tools</p>
+    <button class="side-btn" id="exportCsvBtn"><i class="fa-solid fa-file-export"></i> Export CSV</button>
+    <button class="side-btn" id="importCsvBtn"><i class="fa-solid fa-file-import"></i> Import CSV</button>
+    <input type="file" id="importCsvInput" accept=".csv" hidden>
+    <button class="side-btn" id="resetAttendanceBtn"><i class="fa-solid fa-rotate-left"></i> Reset Attendance</button>
+    <button class="side-btn danger" id="resetDbBtn"><i class="fa-solid fa-trash-can"></i> Reset Database</button>
+  </div>
+
+  <div class="sidebar-footer">
+    <p>Crafted with <i class="fa-solid fa-heart"></i> — Vanilla JS</p>
+  </div>
+</aside>
+
+<div class="overlay" id="overlay"></div>
+
+<!-- ============ MAIN CONTENT ============ -->
+<div class="main">
+
+  <!-- ============ TOP NAVBAR ============ -->
+  <header class="navbar">
+    <button class="hamburger" id="hamburgerBtn" aria-label="Toggle sidebar">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+
+    <div class="navbar-search">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="searchInput" placeholder="Search students by name...">
+    </div>
+
+    <div class="navbar-right">
+      <div class="datetime-box">
+        <i class="fa-solid fa-calendar-days"></i>
+        <div>
+          <span id="currentDate">--</span>
+          <span id="currentTime">--</span>
+        </div>
+      </div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <i class="fa-solid fa-moon"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============ DASHBOARD CONTENT ============ -->
+  <main class="content">
+
+    <div class="page-heading">
+      <h2>Dashboard Overview</h2>
+      <p>Track, manage and analyze student attendance in real time.</p>
+    </div>
+
+    <!-- ============ STAT CARDS ============ -->
+    <section class="stats-grid">
+      <div class="stat-card glass" style="--delay:0s">
+        <div class="stat-icon total"><i class="fa-solid fa-users"></i></div>
+        <div class="stat-info">
+          <span class="stat-value" id="totalStudents">0</span>
+          <span class="stat-label">Total Students</span>
+        </div>
+      </div>
+
+      <div class="stat-card glass" style="--delay:0.1s">
+        <div class="stat-icon present"><i class="fa-solid fa-user-check"></i></div>
+        <div class="stat-info">
+          <span class="stat-value" id="presentCount">0</span>
+          <span class="stat-label">Present Today</span>
+        </div>
+      </div>
+
+      <div class="stat-card glass" style="--delay:0.2s">
+        <div class="stat-icon absent"><i class="fa-solid fa-user-xmark"></i></div>
+        <div class="stat-info">
+          <span class="stat-value" id="absentCount">0</span>
+          <span class="stat-label">Absent Today</span>
+        </div>
+      </div>
+
+      <div class="stat-card glass" style="--delay:0.3s">
+        <div class="stat-icon percent"><i class="fa-solid fa-chart-pie"></i></div>
+        <div class="stat-info">
+          <span class="stat-value" id="attendancePercent">0%</span>
+          <span class="stat-label">Attendance Rate</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ ADD STUDENT + SORT BAR ============ -->
+    <section class="toolbar glass">
+      <form class="add-student-form" id="addStudentForm">
+        <i class="fa-solid fa-user-plus"></i>
+        <input type="text" id="newStudentInput" placeholder="Enter new student name..." maxlength="40">
+        <button type="submit" class="btn-primary">
+          <i class="fa-solid fa-plus"></i> Add Student
+        </button>
+      </form>
+
+      <button class="btn-outline" id="sortBtn">
+        <i class="fa-solid fa-arrow-down-a-z"></i> Sort A–Z
+      </button>
+    </section>
+
+    <!-- ============ STUDENT LIST ============ -->
+    <section class="student-section glass">
+      <div class="student-section-head">
+        <h3><i class="fa-solid fa-list-check"></i> Student Records</h3>
+        <span class="filter-chip" id="activeFilterChip">All Students</span>
+      </div>
+
+      <div class="table-scroll">
+        <table class="student-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Student Name</th>
+              <th>Status</th>
+              <th>Attendance %</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="studentTableBody">
+            <!-- Rows injected by JavaScript -->
+          </tbody>
+        </table>
+
+        <div class="empty-state" id="emptyState">
+          <i class="fa-solid fa-clipboard-list"></i>
+          <p>No students found. Add your first student above to get started.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ============ TOAST CONTAINER ============ -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ============ CONFIRMATION MODAL ============ -->
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal glass">
+    <div class="modal-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+    <h3 id="modalTitle">Are you sure?</h3>
+    <p id="modalMessage">This action cannot be undone.</p>
+    <div class="modal-actions">
+      <button class="btn-outline" id="modalCancelBtn">Cancel</button>
+      <button class="btn-danger" id="modalConfirmBtn">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ EDIT STUDENT MODAL ============ -->
+<div class="modal-backdrop" id="editModalBackdrop">
+  <div class="modal glass">
+    <div class="modal-icon edit"><i class="fa-solid fa-pen"></i></div>
+    <h3>Edit Student Name</h3>
+    <input type="text" id="editStudentInput" class="modal-input" maxlength="40">
+    <div class="modal-actions">
+      <button class="btn-outline" id="editCancelBtn">Cancel</button>
+      <button class="btn-primary" id="editSaveBtn">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
